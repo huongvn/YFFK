@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:padding="20dp"
+    android:padding="12dp"
     android:background="#0f0f0f">
 
     <LinearLayout
@@ -18,94 +18,94 @@
             android:layout_height="wrap_content"
             android:text="Cài đặt MQTT"
             android:textColor="#FFFFFF"
-            android:textSize="16sp"
+            android:textSize="10sp"
             android:textStyle="bold"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="7dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Broker (ví dụ: tcp://broker.hivemq.com:1883)"
             android:textColor="#AAAAAA"
-            android:textSize="12sp" />
+            android:textSize="7sp" />
 
         <EditText
             android:id="@+id/et_broker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
+            android:textSize="8sp"
             android:textColor="#FFFFFF"
             android:inputType="textUri"
             android:importantForAutofill="no"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="5dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Client ID"
             android:textColor="#AAAAAA"
-            android:textSize="12sp" />
+            android:textSize="7sp" />
 
         <EditText
             android:id="@+id/et_client_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
+            android:textSize="8sp"
             android:textColor="#FFFFFF"
             android:inputType="text"
             android:importantForAutofill="no"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="5dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Username (nếu broker yêu cầu)"
             android:textColor="#AAAAAA"
-            android:textSize="12sp" />
+            android:textSize="7sp" />
 
         <EditText
             android:id="@+id/et_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
+            android:textSize="8sp"
             android:textColor="#FFFFFF"
             android:inputType="text"
             android:importantForAutofill="no"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="5dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Password"
             android:textColor="#AAAAAA"
-            android:textSize="12sp" />
+            android:textSize="7sp" />
 
         <EditText
             android:id="@+id/et_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
+            android:textSize="8sp"
             android:textColor="#FFFFFF"
             android:inputType="textPassword"
             android:importantForAutofill="no"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="5dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Topic đăng ký (subscribe)"
             android:textColor="#AAAAAA"
-            android:textSize="12sp" />
+            android:textSize="7sp" />
 
         <EditText
             android:id="@+id/et_topic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
+            android:textSize="8sp"
             android:textColor="#FFFFFF"
             android:inputType="text"
             android:importantForAutofill="no"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="7dp" />
 
         <Button
             android:id="@+id/btn_connect"
@@ -113,10 +113,10 @@
             android:layout_height="wrap_content"
             android:minWidth="0dp"
             android:text="Kết nối"
-            android:textSize="13sp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:layout_marginBottom="8dp" />
+            android:textSize="8sp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginBottom="5dp" />
 
         <TextView
             android:id="@+id/tv_status"
@@ -124,8 +124,8 @@
             android:layout_height="wrap_content"
             android:text="Chưa kết nối"
             android:textColor="#FFCC00"
-            android:textSize="13sp"
-            android:layout_marginBottom="8dp" />
+            android:textSize="8sp"
+            android:layout_marginBottom="5dp" />
 
         <TextView
             android:id="@+id/tv_ip"
@@ -133,15 +133,15 @@
             android:layout_height="wrap_content"
             android:text="IP local: ..."
             android:textColor="#88FFFFFF"
-            android:textSize="12sp"
-            android:layout_marginBottom="12dp" />
+            android:textSize="7sp"
+            android:layout_marginBottom="7dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Định dạng tin nhắn điều khiển (JSON):"
             android:textColor="#AAAAAA"
-            android:textSize="12sp" />
+            android:textSize="7sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -150,8 +150,8 @@
 { "action": "stop" }  → tạm dừng
 { "action": "next" }  → video kế tiếp'
             android:textColor="#FFFFFF"
-            android:textSize="12sp"
+            android:textSize="7sp"
             android:fontFamily="monospace"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="2dp" />
     </LinearLayout>
 </ScrollView>
