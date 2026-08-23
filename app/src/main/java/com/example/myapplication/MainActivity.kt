@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -38,8 +39,10 @@ class MainActivity : FragmentActivity() {
     private lateinit var tvPlaylistName: TextView
     private lateinit var tvUptime: TextView
     private lateinit var rowsAdapter: ArrayObjectAdapter
+    private lateinit var fragment: BrowseSupportFragment
     private val playlistVideoMap = mutableMapOf<String, Pair<List<String>, Int>>()
     private var rowId = 0
+    private var lastConfigSignature: String = ""
 
     private val clockHandler = Handler(Looper.getMainLooper())
     private val clockRunnable = object : Runnable {
@@ -71,18 +74,7 @@ class MainActivity : FragmentActivity() {
         SessionTimer.startTime = SystemClock.elapsedRealtime()
         uptimeHandler.post(uptimeRunnable)
 
-        apiKey = prefs.getString("yt_api_key", "")?.takeIf { it.isNotEmpty() } ?: BuildConfig.YOUTUBE_API_KEY
-        playlistIds = listOf(
-            prefs.getString("yt_pl_1", "") ?: "",
-            prefs.getString("yt_pl_2", "") ?: "",
-            prefs.getString("yt_pl_3", "") ?: ""
-        ).map { it.trim() }.filter { it.isNotEmpty() }.ifEmpty {
-            listOf(
-                BuildConfig.YOUTUBE_PLAYLIST_ID,
-                BuildConfig.YOUTUBE_PLAYLIST_ID_2,
-                BuildConfig.YOUTUBE_PLAYLIST_ID_3
-            ).map { it.trim() }.filter { it.isNotEmpty() }
-        }
+        loadConfig(prefs)
 
         findViewById<ImageView>(R.id.iv_settings).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
@@ -90,7 +82,7 @@ class MainActivity : FragmentActivity() {
 
         autoConnectMqtt()
 
-        val fragment = BrowseSupportFragment()
+        fragment = BrowseSupportFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_frame, fragment)
             .commitNow()
@@ -110,6 +102,50 @@ class MainActivity : FragmentActivity() {
             }
         }
 
+        loadPlaylists()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val prefs = getSharedPreferences("yffk_mqtt", MODE_PRIVATE)
+        val sig = configSignature(prefs)
+        if (sig != lastConfigSignature) {
+            loadConfig(prefs)
+            loadPlaylists()
+        }
+    }
+
+    private fun configSignature(prefs: SharedPreferences): String {
+        val key = prefs.getString("yt_api_key", "")?.takeIf { it.isNotEmpty() } ?: BuildConfig.YOUTUBE_API_KEY
+        val ids = computePlaylistIds(prefs)
+        return "$key|${ids.joinToString(",")}"
+    }
+
+    private fun loadConfig(prefs: SharedPreferences) {
+        apiKey = prefs.getString("yt_api_key", "")?.takeIf { it.isNotEmpty() } ?: BuildConfig.YOUTUBE_API_KEY
+        playlistIds = computePlaylistIds(prefs)
+        lastConfigSignature = configSignature(prefs)
+    }
+
+    private fun computePlaylistIds(prefs: SharedPreferences): List<String> {
+        val fromPrefs = listOf(
+            prefs.getString("yt_pl_1", "") ?: "",
+            prefs.getString("yt_pl_2", "") ?: "",
+            prefs.getString("yt_pl_3", "") ?: ""
+        ).map { it.trim() }.filter { it.isNotEmpty() }
+        return if (fromPrefs.isNotEmpty()) fromPrefs else {
+            listOf(
+                BuildConfig.YOUTUBE_PLAYLIST_ID,
+                BuildConfig.YOUTUBE_PLAYLIST_ID_2,
+                BuildConfig.YOUTUBE_PLAYLIST_ID_3
+            ).map { it.trim() }.filter { it.isNotEmpty() }
+        }
+    }
+
+    private fun loadPlaylists() {
+        playlistVideoMap.clear()
+        rowId = 0
+        rowsAdapter.clear()
         playlistIds.forEach { loadPlaylist(fragment, it) }
     }
 

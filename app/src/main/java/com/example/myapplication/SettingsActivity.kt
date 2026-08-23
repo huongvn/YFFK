@@ -140,10 +140,7 @@ class SettingsActivity : AppCompatActivity() {
                 .putString("yt_pl_3", etPlaylist3.text.toString().trim())
                 .apply()
             tvStatus.text = "Đã lưu cấu hình YouTube"
-            Toast.makeText(this, "Đã lưu, đang tải lại trang chính", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, MainActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
+            Toast.makeText(this, "Đã lưu, quay lại để tải lại trang chính", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
