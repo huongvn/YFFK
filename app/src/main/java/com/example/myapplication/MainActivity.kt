@@ -2,6 +2,9 @@ package com.example.myapplication
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.ArrayObjectAdapter
@@ -10,6 +13,7 @@ import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.OnItemViewClickedListener
 import com.example.myapplication.model.PlaylistItem
+import com.example.myapplication.model.PlaylistTitleResponse
 import com.example.myapplication.model.YouTubeResponse
 import com.example.myapplication.network.YouTubeApiService
 import com.example.myapplication.ui.VideoCardPresenter
@@ -18,15 +22,30 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : FragmentActivity() {
 
     private val API_KEY = BuildConfig.YOUTUBE_API_KEY
     private val PLAYLIST_ID = BuildConfig.YOUTUBE_PLAYLIST_ID
 
+    private lateinit var tvClock: TextView
+    private val clockHandler = Handler(Looper.getMainLooper())
+    private val clockRunnable = object : Runnable {
+        override fun run() {
+            tvClock.text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+            clockHandler.postDelayed(this, 1000)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        tvClock = findViewById(R.id.tv_clock)
+        clockHandler.post(clockRunnable)
 
         val fragment = BrowseSupportFragment()
         supportFragmentManager.beginTransaction()
@@ -34,8 +53,40 @@ class MainActivity : FragmentActivity() {
             .commitNow()
 
         fragment.title = "YouTube Playlist"
+        fragment.headersState = BrowseSupportFragment.HEADERS_ENABLED
 
+        fetchPlaylistTitle(fragment)
         fetchPlaylistVideos(fragment)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        clockHandler.removeCallbacks(clockRunnable)
+    }
+
+    private fun fetchPlaylistTitle(fragment: BrowseSupportFragment) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://www.googleapis.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        retrofit.create(YouTubeApiService::class.java)
+            .getPlaylist(playlistId = PLAYLIST_ID, apiKey = API_KEY)
+            .enqueue(object : Callback<PlaylistTitleResponse> {
+                override fun onResponse(
+                    call: Call<PlaylistTitleResponse>,
+                    response: Response<PlaylistTitleResponse>
+                ) {
+                    val title = response.body()?.items?.firstOrNull()?.snippet?.title
+                    if (!title.isNullOrEmpty()) {
+                        fragment.title = title
+                    }
+                }
+
+                override fun onFailure(call: Call<PlaylistTitleResponse>, t: Throwable) {
+                    t.printStackTrace()
+                }
+            })
     }
 
     private fun fetchPlaylistVideos(fragment: BrowseSupportFragment) {
@@ -76,7 +127,7 @@ class MainActivity : FragmentActivity() {
         rowsAdapter.add(ListRow(header, listRowAdapter))
         fragment.adapter = rowsAdapter
 
-        fragment.onItemViewClickedListener = OnItemViewClickedListener { itemClickDetector, item, _, _ ->
+        fragment.onItemViewClickedListener = OnItemViewClickedListener { _, item, _, _ ->
             if (item is PlaylistItem) {
                 val intent = Intent(this, PlayerActivity::class.java)
                 intent.putExtra("VIDEO_ID", item.snippet.resourceId.videoId)
