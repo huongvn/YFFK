@@ -21,8 +21,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : FragmentActivity() {
 
-    private val API_KEY = "YOUR_YOUTUBE_API_KEY"
-    private val PLAYLIST_ID = "YOUR_PLAYLIST_ID"
+    private val API_KEY = "REMOVED_API_KEY"
+    private val PLAYLIST_ID = "PLYzKnm87_04Y"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
