@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="48dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0f0f0f">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cài đặt MQTT"
+        android:textColor="#FFFFFF"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Broker (ví dụ: tcp://broker.hivemq.com:1883)"
+        android:textColor="#AAAAAA"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/et_broker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:inputType="textUri"
+        android:importantForAutofill="no"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Client ID"
+        android:textColor="#AAAAAA"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/et_client_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:inputType="text"
+        android:importantForAutofill="no"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Topic đăng ký (subscribe)"
+        android:textColor="#AAAAAA"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/et_topic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:inputType="text"
+        android:importantForAutofill="no"
+        android:layout_marginBottom="28dp" />
+
+    <Button
+        android:id="@+id/btn_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kết nối"
+        android:textSize="20sp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chưa kết nối"
+        android:textColor="#FFCC00"
+        android:textSize="20sp"
+        android:layout_marginBottom="28dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Định dạng tin nhắn điều khiển (JSON):"
+        android:textColor="#AAAAAA"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text='{ "action": "play" }  → tiếp tục phát
+{ "action": "stop" }  → tạm dừng
+{ "action": "next" }  → video kế tiếp'
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:fontFamily="monospace"
+        android:layout_marginTop="8dp" />
+</LinearLayout>

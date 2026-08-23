@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.leanback.app.BrowseSupportFragment
@@ -15,6 +16,7 @@ import androidx.leanback.widget.OnItemViewClickedListener
 import com.example.myapplication.model.PlaylistItem
 import com.example.myapplication.model.PlaylistTitleResponse
 import com.example.myapplication.model.YouTubeResponse
+import com.example.myapplication.mqtt.MqttController
 import com.example.myapplication.network.YouTubeApiService
 import com.example.myapplication.ui.VideoCardPresenter
 import retrofit2.Call
@@ -50,6 +52,12 @@ class MainActivity : FragmentActivity() {
         tvPlaylistName.text = "YouTube Playlist"
         clockHandler.post(clockRunnable)
 
+        findViewById<ImageView>(R.id.iv_settings).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+
+        autoConnectMqtt()
+
         val fragment = BrowseSupportFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_frame, fragment)
@@ -64,6 +72,17 @@ class MainActivity : FragmentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         clockHandler.removeCallbacks(clockRunnable)
+    }
+
+    private fun autoConnectMqtt() {
+        val prefs = getSharedPreferences("yffk_mqtt", MODE_PRIVATE)
+        if (!prefs.getBoolean("mqtt_connected", false)) return
+        val broker = prefs.getString("mqtt_broker", "") ?: ""
+        val clientId = prefs.getString("mqtt_client_id", "") ?: ""
+        val topic = prefs.getString("mqtt_topic", "") ?: ""
+        if (broker.isNotEmpty() && topic.isNotEmpty()) {
+            MqttController.connect(broker, clientId, topic)
+        }
     }
 
     private fun fetchPlaylistTitle() {

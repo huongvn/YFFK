@@ -67,4 +67,5 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
+    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
 }
