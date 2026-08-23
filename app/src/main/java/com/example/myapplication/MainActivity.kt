@@ -79,9 +79,11 @@ class MainActivity : FragmentActivity() {
         if (!prefs.getBoolean("mqtt_connected", false)) return
         val broker = prefs.getString("mqtt_broker", "") ?: ""
         val clientId = prefs.getString("mqtt_client_id", "") ?: ""
+        val username = prefs.getString("mqtt_username", "") ?: ""
+        val password = prefs.getString("mqtt_password", "") ?: ""
         val topic = prefs.getString("mqtt_topic", "") ?: ""
         if (broker.isNotEmpty() && topic.isNotEmpty()) {
-            MqttController.connect(broker, clientId, topic)
+            MqttController.connect(broker, clientId, topic, username, password)
         }
     }
 

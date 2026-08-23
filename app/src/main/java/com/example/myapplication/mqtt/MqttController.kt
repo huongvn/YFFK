@@ -29,7 +29,7 @@ object MqttController {
     private val mainHandler = Handler(Looper.getMainLooper())
     var onState: ((String) -> Unit)? = null
 
-    fun connect(broker: String, clientId: String, topic: String) {
+    fun connect(broker: String, clientId: String, topic: String, username: String = "", password: String = "") {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 disconnect()
@@ -53,6 +53,10 @@ object MqttController {
                     isCleanSession = true
                     connectionTimeout = 10
                     keepAliveInterval = 30
+                    if (username.isNotEmpty()) {
+                        userName = username
+                        if (password.isNotEmpty()) this.password = password.toCharArray()
+                    }
                 }
                 c.connect(options)
                 c.subscribe(topic, 1)
