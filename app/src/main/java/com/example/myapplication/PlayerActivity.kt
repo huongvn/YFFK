@@ -22,14 +22,6 @@ class PlayerActivity : AppCompatActivity() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 youTubePlayer.loadVideo(videoId, 0f)
             }
-
-            override fun onError(
-                youTubePlayer: YouTubePlayer?,
-                errorReason: com.pierfrancescosoffritti.androidyoutubeplayer.core.player.errors YouTubePlayer.ErrorReason?
-            ) {
-                super.onError(youTubePlayer, errorReason)
-                android.util.Log.e("YT_PLAYER_ERROR", "Error reason: ${errorReason?.code} - ${errorReason?.reason}")
-            }
         })
     }
 }
