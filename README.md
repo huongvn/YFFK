@@ -46,7 +46,7 @@ YOUTUBE_PLAYLIST_ID_3=PLAYLIST_ID_3
 
 App hỗ trợ tối đa **3 playlist**, mỗi playlist hiển thị thành một hàng (row) riêng biệt trong giao diện, tiêu đề hàng là tên playlist. Chuyển tiếp / vòng lặp video chỉ xảy ra trong nội bộ từng playlist.
 
-Các giá trị này được đưa vào `BuildConfig.YOUTUBE_PLAYLIST_ID`, `YOUTUBE_PLAYLIST_ID_2`, `YOUTUBE_PLAYLIST_ID_3` khi build.
+Các giá trị trong `local.properties` là **mặc định lúc build** (truyền vào `BuildConfig`). Khi chạy app, bạn có thể đổi chúng trực tiếp trên màn hình **Cài đặt** (cột 2 – "Cấu hình YouTube": API Key, Playlist ID 1/2/3) và bấm **Lưu cấu hình YouTube**; lúc đó trang chính sẽ tự tải lại. Nếu để trống một Playlist ID, hàng tương ứng sẽ không hiển thị trên trang chính.
 
 ## Build & chạy
 

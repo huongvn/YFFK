@@ -31,14 +31,8 @@ import java.util.Locale
 
 class MainActivity : FragmentActivity() {
 
-    private val API_KEY = BuildConfig.YOUTUBE_API_KEY
-    private val playlistIds: List<String> by lazy {
-        listOf(
-            BuildConfig.YOUTUBE_PLAYLIST_ID,
-            BuildConfig.YOUTUBE_PLAYLIST_ID_2,
-            BuildConfig.YOUTUBE_PLAYLIST_ID_3
-        ).map { it.trim() }.filter { it.isNotEmpty() }
-    }
+    private var apiKey: String = BuildConfig.YOUTUBE_API_KEY
+    private var playlistIds: List<String> = emptyList()
 
     private lateinit var tvClock: TextView
     private lateinit var tvPlaylistName: TextView
@@ -76,6 +70,19 @@ class MainActivity : FragmentActivity() {
         SessionTimer.load(prefs)
         SessionTimer.startTime = SystemClock.elapsedRealtime()
         uptimeHandler.post(uptimeRunnable)
+
+        apiKey = prefs.getString("yt_api_key", "")?.takeIf { it.isNotEmpty() } ?: BuildConfig.YOUTUBE_API_KEY
+        playlistIds = listOf(
+            prefs.getString("yt_pl_1", "") ?: "",
+            prefs.getString("yt_pl_2", "") ?: "",
+            prefs.getString("yt_pl_3", "") ?: ""
+        ).map { it.trim() }.filter { it.isNotEmpty() }.ifEmpty {
+            listOf(
+                BuildConfig.YOUTUBE_PLAYLIST_ID,
+                BuildConfig.YOUTUBE_PLAYLIST_ID_2,
+                BuildConfig.YOUTUBE_PLAYLIST_ID_3
+            ).map { it.trim() }.filter { it.isNotEmpty() }
+        }
 
         findViewById<ImageView>(R.id.iv_settings).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
@@ -133,7 +140,7 @@ class MainActivity : FragmentActivity() {
         val service = retrofit.create(YouTubeApiService::class.java)
 
         fun buildRow(title: String) {
-            service.getPlaylistItems(playlistId = playlistId, apiKey = API_KEY)
+            service.getPlaylistItems(playlistId = playlistId, apiKey = apiKey)
                 .enqueue(object : Callback<YouTubeResponse> {
                     override fun onResponse(call: Call<YouTubeResponse>, response: Response<YouTubeResponse>) {
                         if (!response.isSuccessful) return
@@ -160,7 +167,7 @@ class MainActivity : FragmentActivity() {
                 })
         }
 
-        service.getPlaylist(playlistId = playlistId, apiKey = API_KEY)
+        service.getPlaylist(playlistId = playlistId, apiKey = apiKey)
             .enqueue(object : Callback<PlaylistTitleResponse> {
                 override fun onResponse(
                     call: Call<PlaylistTitleResponse>,

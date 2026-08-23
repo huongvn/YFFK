@@ -3,223 +3,326 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:padding="12dp"
+    android:padding="20dp"
     android:background="#0f0f0f">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="560dp"
-        android:maxWidth="560dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cài đặt MQTT"
-            android:textColor="#FFFFFF"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="7dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Broker (ví dụ: tcp://broker.hivemq.com:1883)"
-            android:textColor="#AAAAAA"
-            android:textSize="7sp" />
-
-        <EditText
-            android:id="@+id/et_broker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8sp"
-            android:textColor="#FFFFFF"
-            android:inputType="textUri"
-            android:importantForAutofill="no"
-            android:layout_marginBottom="5dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Client ID"
-            android:textColor="#AAAAAA"
-            android:textSize="7sp" />
-
-        <EditText
-            android:id="@+id/et_client_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8sp"
-            android:textColor="#FFFFFF"
-            android:inputType="text"
-            android:importantForAutofill="no"
-            android:layout_marginBottom="5dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Username (nếu broker yêu cầu)"
-            android:textColor="#AAAAAA"
-            android:textSize="7sp" />
-
-        <EditText
-            android:id="@+id/et_username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8sp"
-            android:textColor="#FFFFFF"
-            android:inputType="text"
-            android:importantForAutofill="no"
-            android:layout_marginBottom="5dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Password"
-            android:textColor="#AAAAAA"
-            android:textSize="7sp" />
-
-        <EditText
-            android:id="@+id/et_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8sp"
-            android:textColor="#FFFFFF"
-            android:inputType="textPassword"
-            android:importantForAutofill="no"
-            android:layout_marginBottom="5dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Topic đăng ký (subscribe)"
-            android:textColor="#AAAAAA"
-            android:textSize="7sp" />
-
-        <EditText
-            android:id="@+id/et_topic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8sp"
-            android:textColor="#FFFFFF"
-            android:inputType="text"
-            android:importantForAutofill="no"
-            android:layout_marginBottom="7dp" />
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
+            android:id="@+id/col_mqtt"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp">
+            android:paddingEnd="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cài đặt MQTT"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Broker (ví dụ: tcp://broker.hivemq.com:1883)"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_broker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="textUri"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Client ID"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_client_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="text"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username (nếu broker yêu cầu)"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="text"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="textPassword"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Topic đăng ký (subscribe)"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_topic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="text"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="7dp" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp">
+
+                <Button
+                    android:id="@+id/btn_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="0dp"
+                    android:text="Lưu"
+                    android:textSize="8sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btn_connect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="0dp"
+                    android:text="Kết nối"
+                    android:textSize="8sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btn_disconnect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="0dp"
+                    android:text="Ngắt kết nối"
+                    android:textSize="8sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Số phút tối đa được xem (mặc định 60)"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp"
+                android:layout_marginTop="6dp" />
+
+            <EditText
+                android:id="@+id/et_max_minutes"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="number"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="5dp" />
 
             <Button
-                android:id="@+id/btn_save"
+                android:id="@+id/btn_save_timer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="0dp"
-                android:text="Lưu"
+                android:text="Lưu thông số"
                 android:textSize="8sp"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginBottom="5dp" />
 
             <Button
-                android:id="@+id/btn_connect"
+                android:id="@+id/btn_reset_counter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="0dp"
-                android:text="Kết nối"
+                android:text="Reset bộ đếm"
                 android:textSize="8sp"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chưa kết nối"
+                android:textColor="#FFCC00"
+                android:textSize="8sp"
+                android:layout_marginBottom="5dp" />
+
+            <TextView
+                android:id="@+id/tv_ip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IP local: ..."
+                android:textColor="#88FFFFFF"
+                android:textSize="7sp"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Định dạng tin nhắn điều khiển (JSON):"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='{ "action": "play" }  → tiếp tục phát
+{ "action": "stop" }  → tạm dừng
+{ "action": "next" }  → video kế tiếp'
+                android:textColor="#FFFFFF"
+                android:textSize="7sp"
+                android:fontFamily="monospace"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/col_youtube"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cấu hình YouTube"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="YouTube API Key"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_api_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="text"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Playlist ID 1"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_playlist_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="text"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Playlist ID 2 (tuỳ chọn)"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_playlist_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="text"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Playlist ID 3 (tuỳ chọn)"
+                android:textColor="#AAAAAA"
+                android:textSize="7sp" />
+
+            <EditText
+                android:id="@+id/et_playlist_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="8sp"
+                android:textColor="#FFFFFF"
+                android:inputType="text"
+                android:importantForAutofill="no"
+                android:layout_marginBottom="10dp" />
 
             <Button
-                android:id="@+id/btn_disconnect"
+                android:id="@+id/btn_save_youtube"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="0dp"
-                android:text="Ngắt kết nối"
+                android:text="Lưu cấu hình YouTube"
                 android:textSize="8sp"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp" />
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Số phút tối đa được xem (mặc định 60)"
-            android:textColor="#AAAAAA"
-            android:textSize="7sp"
-            android:layout_marginTop="6dp" />
-
-        <EditText
-            android:id="@+id/et_max_minutes"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:textSize="8sp"
-            android:textColor="#FFFFFF"
-            android:inputType="number"
-            android:importantForAutofill="no"
-            android:layout_marginBottom="5dp" />
-
-        <Button
-            android:id="@+id/btn_save_timer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="0dp"
-            android:text="Lưu thông số"
-            android:textSize="8sp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:layout_marginBottom="5dp" />
-
-        <Button
-            android:id="@+id/btn_reset_counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="0dp"
-            android:text="Reset bộ đếm"
-            android:textSize="8sp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/tv_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chưa kết nối"
-            android:textColor="#FFCC00"
-            android:textSize="8sp"
-            android:layout_marginBottom="5dp" />
-
-        <TextView
-            android:id="@+id/tv_ip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="IP local: ..."
-            android:textColor="#88FFFFFF"
-            android:textSize="7sp"
-            android:layout_marginBottom="7dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Định dạng tin nhắn điều khiển (JSON):"
-            android:textColor="#AAAAAA"
-            android:textSize="7sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text='{ "action": "play" }  → tiếp tục phát
-{ "action": "stop" }  → tạm dừng
-{ "action": "next" }  → video kế tiếp'
-            android:textColor="#FFFFFF"
-            android:textSize="7sp"
-            android:fontFamily="monospace"
-            android:layout_marginTop="2dp" />
     </LinearLayout>
 </ScrollView>

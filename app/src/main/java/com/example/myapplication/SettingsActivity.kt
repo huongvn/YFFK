@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
@@ -7,6 +8,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.BuildConfig
 import com.example.myapplication.mqtt.MqttController
 import java.net.Inet4Address
 import java.net.NetworkInterface
@@ -27,6 +29,11 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var etMaxMinutes: EditText
     private lateinit var tvStatus: TextView
     private lateinit var tvIp: TextView
+    private lateinit var etApiKey: EditText
+    private lateinit var etPlaylist1: EditText
+    private lateinit var etPlaylist2: EditText
+    private lateinit var etPlaylist3: EditText
+    private lateinit var btnSaveYoutube: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +53,11 @@ class SettingsActivity : AppCompatActivity() {
         etMaxMinutes = findViewById(R.id.et_max_minutes)
         tvStatus = findViewById(R.id.tv_status)
         tvIp = findViewById(R.id.tv_ip)
+        etApiKey = findViewById(R.id.et_api_key)
+        etPlaylist1 = findViewById(R.id.et_playlist_1)
+        etPlaylist2 = findViewById(R.id.et_playlist_2)
+        etPlaylist3 = findViewById(R.id.et_playlist_3)
+        btnSaveYoutube = findViewById(R.id.btn_save_youtube)
         tvIp.text = "IP local: ${getLocalIpAddress()}"
 
         SessionTimer.load(prefs)
@@ -56,6 +68,15 @@ class SettingsActivity : AppCompatActivity() {
         etPassword.setText(prefs.getString("mqtt_password", ""))
         etTopic.setText(prefs.getString("mqtt_topic", "yffk/youtube-tv/command"))
         etMaxMinutes.setText(SessionTimer.maxMinutes.toString())
+
+        etApiKey.setText(prefs.getString("yt_api_key", "") ?: "")
+        if (etApiKey.text.isEmpty()) etApiKey.setText(BuildConfig.YOUTUBE_API_KEY)
+        etPlaylist1.setText(prefs.getString("yt_pl_1", "") ?: "")
+        if (etPlaylist1.text.isEmpty()) etPlaylist1.setText(BuildConfig.YOUTUBE_PLAYLIST_ID)
+        etPlaylist2.setText(prefs.getString("yt_pl_2", "") ?: "")
+        if (etPlaylist2.text.isEmpty()) etPlaylist2.setText(BuildConfig.YOUTUBE_PLAYLIST_ID_2)
+        etPlaylist3.setText(prefs.getString("yt_pl_3", "") ?: "")
+        if (etPlaylist3.text.isEmpty()) etPlaylist3.setText(BuildConfig.YOUTUBE_PLAYLIST_ID_3)
 
         MqttController.onState = { status ->
             tvStatus.text = status
@@ -109,6 +130,21 @@ class SettingsActivity : AppCompatActivity() {
         btnResetCounter.setOnClickListener {
             SessionTimer.reset()
             Toast.makeText(this, "Đã reset bộ đếm", Toast.LENGTH_SHORT).show()
+        }
+
+        btnSaveYoutube.setOnClickListener {
+            prefs.edit()
+                .putString("yt_api_key", etApiKey.text.toString().trim())
+                .putString("yt_pl_1", etPlaylist1.text.toString().trim())
+                .putString("yt_pl_2", etPlaylist2.text.toString().trim())
+                .putString("yt_pl_3", etPlaylist3.text.toString().trim())
+                .apply()
+            tvStatus.text = "Đã lưu cấu hình YouTube"
+            Toast.makeText(this, "Đã lưu, đang tải lại trang chính", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
         }
     }
 
