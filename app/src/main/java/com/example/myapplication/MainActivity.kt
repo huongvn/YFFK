@@ -37,7 +37,6 @@ class MainActivity : FragmentActivity() {
     private lateinit var tvClock: TextView
     private lateinit var tvPlaylistName: TextView
     private lateinit var tvUptime: TextView
-    private var appStartTime = 0L
     private val clockHandler = Handler(Looper.getMainLooper())
     private val clockRunnable = object : Runnable {
         override fun run() {
@@ -48,8 +47,7 @@ class MainActivity : FragmentActivity() {
     private val uptimeHandler = Handler(Looper.getMainLooper())
     private val uptimeRunnable = object : Runnable {
         override fun run() {
-            val mins = ((SystemClock.elapsedRealtime() - appStartTime) / 60000).toInt()
-            tvUptime.text = "$mins phút"
+            tvUptime.text = "${SessionTimer.elapsedMinutes()} phút"
             uptimeHandler.postDelayed(this, 1000)
         }
     }
@@ -64,7 +62,9 @@ class MainActivity : FragmentActivity() {
         clockHandler.post(clockRunnable)
 
         tvUptime = findViewById(R.id.tv_uptime)
-        appStartTime = SystemClock.elapsedRealtime()
+        val prefs = getSharedPreferences("yffk_mqtt", MODE_PRIVATE)
+        SessionTimer.load(prefs)
+        SessionTimer.startTime = SystemClock.elapsedRealtime()
         uptimeHandler.post(uptimeRunnable)
 
         findViewById<ImageView>(R.id.iv_settings).setOnClickListener {

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.mqtt.MqttController
 import java.net.Inet4Address
@@ -21,6 +22,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var btnSave: Button
     private lateinit var btnConnect: Button
     private lateinit var btnDisconnect: Button
+    private lateinit var btnSaveTimer: Button
+    private lateinit var btnResetCounter: Button
+    private lateinit var etMaxMinutes: EditText
     private lateinit var tvStatus: TextView
     private lateinit var tvIp: TextView
 
@@ -37,15 +41,21 @@ class SettingsActivity : AppCompatActivity() {
         btnSave = findViewById(R.id.btn_save)
         btnConnect = findViewById(R.id.btn_connect)
         btnDisconnect = findViewById(R.id.btn_disconnect)
+        btnSaveTimer = findViewById(R.id.btn_save_timer)
+        btnResetCounter = findViewById(R.id.btn_reset_counter)
+        etMaxMinutes = findViewById(R.id.et_max_minutes)
         tvStatus = findViewById(R.id.tv_status)
         tvIp = findViewById(R.id.tv_ip)
         tvIp.text = "IP local: ${getLocalIpAddress()}"
+
+        SessionTimer.load(prefs)
 
         etBroker.setText(prefs.getString("mqtt_broker", "tcp://broker.hivemq.com:1883"))
         etClientId.setText(prefs.getString("mqtt_client_id", ""))
         etUsername.setText(prefs.getString("mqtt_username", ""))
         etPassword.setText(prefs.getString("mqtt_password", ""))
         etTopic.setText(prefs.getString("mqtt_topic", "yffk/youtube-tv/command"))
+        etMaxMinutes.setText(SessionTimer.maxMinutes.toString())
 
         MqttController.onState = { status ->
             tvStatus.text = status
@@ -83,6 +93,22 @@ class SettingsActivity : AppCompatActivity() {
         btnDisconnect.setOnClickListener {
             MqttController.disconnect()
             prefs.edit().putBoolean("mqtt_connected", false).apply()
+        }
+
+        btnSaveTimer.setOnClickListener {
+            val value = etMaxMinutes.text.toString().toIntOrNull()
+            if (value == null || value <= 0) {
+                tvStatus.text = "Số phút tối đa phải lớn hơn 0"
+                return@setOnClickListener
+            }
+            SessionTimer.maxMinutes = value
+            SessionTimer.save(prefs)
+            tvStatus.text = "Đã lưu thông số ($value phút)"
+        }
+
+        btnResetCounter.setOnClickListener {
+            SessionTimer.reset()
+            Toast.makeText(this, "Đã reset bộ đếm", Toast.LENGTH_SHORT).show()
         }
     }
 
