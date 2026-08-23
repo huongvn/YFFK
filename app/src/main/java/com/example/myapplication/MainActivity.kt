@@ -53,8 +53,9 @@ class MainActivity : FragmentActivity() {
                 ) {
                     if (response.isSuccessful) {
                         val allItems = response.body()?.items ?: emptyList()
-                        val embeddableItems = allItems.filter { it.status.embeddable }
-                        setupRows(fragment, embeddableItems)
+                        val embeddableItems = allItems.filter { it.status.embeddable != false }
+                        val displayItems = if (embeddableItems.isEmpty()) allItems else embeddableItems
+                        setupRows(fragment, displayItems)
                     }
                 }
 
