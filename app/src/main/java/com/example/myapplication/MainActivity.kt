@@ -187,8 +187,9 @@ class MainActivity : FragmentActivity() {
 
                         val videoIds = displayItems.mapNotNull { it.snippet.resourceId.videoId }
                         displayItems.forEachIndexed { idx, it ->
-                            val vid = it.snippet.resourceId.videoId
-                            if (vid != null) playlistVideoMap[vid] = Pair(videoIds, idx)
+                            it.snippet.resourceId.videoId?.let { vid ->
+                                playlistVideoMap[vid] = Pair(videoIds, idx)
+                            }
                         }
 
                         val header = HeaderItem(rowId++.toLong(), title)
