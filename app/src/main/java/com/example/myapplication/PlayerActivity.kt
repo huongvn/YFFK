@@ -17,8 +17,9 @@ class PlayerActivity : AppCompatActivity() {
         lifecycle.addObserver(youTubePlayerView)
 
         val videoId = intent.getStringExtra("VIDEO_ID") ?: ""
+        val apiKey = BuildConfig.YOUTUBE_API_KEY.ifEmpty { null }
 
-        youTubePlayerView.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+        youTubePlayerView.initialize(apiKey, object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 youTubePlayer.loadVideo(videoId, 0f)
             }
