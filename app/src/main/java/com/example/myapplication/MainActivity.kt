@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
@@ -35,11 +36,21 @@ class MainActivity : FragmentActivity() {
 
     private lateinit var tvClock: TextView
     private lateinit var tvPlaylistName: TextView
+    private lateinit var tvUptime: TextView
+    private var appStartTime = 0L
     private val clockHandler = Handler(Looper.getMainLooper())
     private val clockRunnable = object : Runnable {
         override fun run() {
             tvClock.text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
             clockHandler.postDelayed(this, 1000)
+        }
+    }
+    private val uptimeHandler = Handler(Looper.getMainLooper())
+    private val uptimeRunnable = object : Runnable {
+        override fun run() {
+            val mins = ((SystemClock.elapsedRealtime() - appStartTime) / 60000).toInt()
+            tvUptime.text = "$mins phút"
+            uptimeHandler.postDelayed(this, 1000)
         }
     }
 
@@ -51,6 +62,10 @@ class MainActivity : FragmentActivity() {
         tvPlaylistName = findViewById(R.id.tv_playlist_name)
         tvPlaylistName.text = "YouTube Playlist"
         clockHandler.post(clockRunnable)
+
+        tvUptime = findViewById(R.id.tv_uptime)
+        appStartTime = SystemClock.elapsedRealtime()
+        uptimeHandler.post(uptimeRunnable)
 
         findViewById<ImageView>(R.id.iv_settings).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
@@ -72,6 +87,7 @@ class MainActivity : FragmentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         clockHandler.removeCallbacks(clockRunnable)
+        uptimeHandler.removeCallbacks(uptimeRunnable)
     }
 
     private fun autoConnectMqtt() {
