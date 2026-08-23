@@ -35,6 +35,6 @@ class VideoCardPresenter : Presenter() {
 
     override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {
         val thumbnail = viewHolder.view.findViewById<ImageView>(R.id.video_thumbnail)
-        Glide.with(thumbnail.context).clear(thumbnail)
+        Glide.with(thumbnail.context.applicationContext).clear(thumbnail)
     }
 }
