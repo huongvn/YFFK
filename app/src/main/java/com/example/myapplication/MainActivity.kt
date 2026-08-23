@@ -131,8 +131,11 @@ class MainActivity : FragmentActivity() {
 
         fragment.onItemViewClickedListener = OnItemViewClickedListener { _, item, _, _ ->
             if (item is PlaylistItem) {
+                val videoIds = items.map { it.snippet.resourceId.videoId }
+                val index = items.indexOf(item)
                 val intent = Intent(this, PlayerActivity::class.java)
-                intent.putExtra("VIDEO_ID", item.snippet.resourceId.videoId)
+                intent.putStringArrayListExtra("VIDEO_IDS", ArrayList(videoIds))
+                intent.putExtra("INDEX", index)
                 startActivity(intent)
             }
         }
