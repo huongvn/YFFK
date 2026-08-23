@@ -8,7 +8,7 @@ import retrofit2.http.Query
 interface YouTubeApiService {
     @GET("youtube/v3/playlistItems")
     fun getPlaylistItems(
-        @Query("part") part: String = "snippet",
+        @Query("part") part: String = "snippet,status",
         @Query("playlistId") playlistId: String,
         @Query("key") apiKey: String,
         @Query("maxResults") maxResults: Int = 50

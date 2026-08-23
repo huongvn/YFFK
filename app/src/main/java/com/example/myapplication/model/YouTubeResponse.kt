@@ -5,13 +5,18 @@ data class YouTubeResponse(
 )
 
 data class PlaylistItem(
-    val snippet: Snippet
+    val snippet: Snippet,
+    val status: Status
 )
 
 data class Snippet(
     val title: String,
     val resourceId: ResourceId,
     val thumbnails: Thumbnails
+)
+
+data class Status(
+    val embeddable: Boolean
 )
 
 data class ResourceId(

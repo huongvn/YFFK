@@ -52,8 +52,9 @@ class MainActivity : FragmentActivity() {
                     response: Response<YouTubeResponse>
                 ) {
                     if (response.isSuccessful) {
-                        val items = response.body()?.items ?: emptyList()
-                        setupRows(fragment, items)
+                        val allItems = response.body()?.items ?: emptyList()
+                        val embeddableItems = allItems.filter { it.status.embeddable }
+                        setupRows(fragment, embeddableItems)
                     }
                 }
 
