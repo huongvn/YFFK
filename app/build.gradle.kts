@@ -14,6 +14,16 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val localProps = java.util.Properties()
+        val localFile = rootProject.file("local.properties")
+        if (localFile.exists()) {
+            localFile.inputStream().use { localProps.load(it) }
+        }
+        val youtubeApiKey = localProps.getProperty("YOUTUBE_API_KEY") ?: ""
+        val youtubePlaylistId = localProps.getProperty("YOUTUBE_PLAYLIST_ID") ?: ""
+
+        buildConfigField("String", "YOUTUBE_API_KEY", "\"$youtubeApiKey\"")
+        buildConfigField("String", "YOUTUBE_PLAYLIST_ID", "\"$youtubePlaylistId\"")
     }
 
     buildTypes {
