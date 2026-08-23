@@ -19,6 +19,20 @@ val youtubePlaylistId: String = Properties().run {
     }
     getProperty("YOUTUBE_PLAYLIST_ID") ?: ""
 }
+val youtubePlaylistId2: String = Properties().run {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        localFile.inputStream().use { load(it) }
+    }
+    getProperty("YOUTUBE_PLAYLIST_ID_2") ?: ""
+}
+val youtubePlaylistId3: String = Properties().run {
+    val localFile = rootProject.file("local.properties")
+    if (localFile.exists()) {
+        localFile.inputStream().use { load(it) }
+    }
+    getProperty("YOUTUBE_PLAYLIST_ID_3") ?: ""
+}
 
 android {
     namespace = "com.example.myapplication"
@@ -33,6 +47,8 @@ android {
 
         buildConfigField("String", "YOUTUBE_API_KEY", "\"$youtubeApiKey\"")
         buildConfigField("String", "YOUTUBE_PLAYLIST_ID", "\"$youtubePlaylistId\"")
+        buildConfigField("String", "YOUTUBE_PLAYLIST_ID_2", "\"$youtubePlaylistId2\"")
+        buildConfigField("String", "YOUTUBE_PLAYLIST_ID_3", "\"$youtubePlaylistId3\"")
     }
 
     buildTypes {

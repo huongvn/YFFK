@@ -32,11 +32,21 @@ import java.util.Locale
 class MainActivity : FragmentActivity() {
 
     private val API_KEY = BuildConfig.YOUTUBE_API_KEY
-    private val PLAYLIST_ID = BuildConfig.YOUTUBE_PLAYLIST_ID
+    private val playlistIds: List<String> by lazy {
+        listOf(
+            BuildConfig.YOUTUBE_PLAYLIST_ID,
+            BuildConfig.YOUTUBE_PLAYLIST_ID_2,
+            BuildConfig.YOUTUBE_PLAYLIST_ID_3
+        ).map { it.trim() }.filter { it.isNotEmpty() }
+    }
 
     private lateinit var tvClock: TextView
     private lateinit var tvPlaylistName: TextView
     private lateinit var tvUptime: TextView
+    private lateinit var rowsAdapter: ArrayObjectAdapter
+    private val playlistVideoMap = mutableMapOf<String, Pair<List<String>, Int>>()
+    private var rowId = 0
+
     private val clockHandler = Handler(Looper.getMainLooper())
     private val clockRunnable = object : Runnable {
         override fun run() {
@@ -58,7 +68,7 @@ class MainActivity : FragmentActivity() {
 
         tvClock = findViewById(R.id.tv_clock)
         tvPlaylistName = findViewById(R.id.tv_playlist_name)
-        tvPlaylistName.text = "YouTube Playlist"
+        tvPlaylistName.text = "YFFK"
         clockHandler.post(clockRunnable)
 
         tvUptime = findViewById(R.id.tv_uptime)
@@ -80,8 +90,20 @@ class MainActivity : FragmentActivity() {
 
         fragment.headersState = BrowseSupportFragment.HEADERS_ENABLED
 
-        fetchPlaylistTitle()
-        fetchPlaylistVideos(fragment)
+        rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
+        fragment.adapter = rowsAdapter
+        fragment.onItemViewClickedListener = OnItemViewClickedListener { _, item, _, _ ->
+            if (item is PlaylistItem) {
+                val videoId = item.snippet.resourceId.videoId ?: return@OnItemViewClickedListener
+                val entry = playlistVideoMap[videoId] ?: return@OnItemViewClickedListener
+                val intent = Intent(this, PlayerActivity::class.java)
+                intent.putStringArrayListExtra("VIDEO_IDS", ArrayList(entry.first))
+                intent.putExtra("INDEX", entry.second)
+                startActivity(intent)
+            }
+        }
+
+        playlistIds.forEach { loadPlaylist(fragment, it) }
     }
 
     override fun onDestroy() {
@@ -103,78 +125,55 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    private fun fetchPlaylistTitle() {
+    private fun loadPlaylist(fragment: BrowseSupportFragment, playlistId: String) {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://www.googleapis.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+        val service = retrofit.create(YouTubeApiService::class.java)
 
-        retrofit.create(YouTubeApiService::class.java)
-            .getPlaylist(playlistId = PLAYLIST_ID, apiKey = API_KEY)
+        fun buildRow(title: String) {
+            service.getPlaylistItems(playlistId = playlistId, apiKey = API_KEY)
+                .enqueue(object : Callback<YouTubeResponse> {
+                    override fun onResponse(call: Call<YouTubeResponse>, response: Response<YouTubeResponse>) {
+                        if (!response.isSuccessful) return
+                        val allItems = response.body()?.items ?: emptyList()
+                        val embeddableItems = allItems.filter { it.status.embeddable != false }
+                        val displayItems = if (embeddableItems.isEmpty()) allItems else embeddableItems
+                        if (displayItems.isEmpty()) return
+
+                        val videoIds = displayItems.mapNotNull { it.snippet.resourceId.videoId }
+                        displayItems.forEachIndexed { idx, it ->
+                            val vid = it.snippet.resourceId.videoId
+                            if (vid != null) playlistVideoMap[vid] = Pair(videoIds, idx)
+                        }
+
+                        val header = HeaderItem(rowId++.toLong(), title)
+                        val listRowAdapter = ArrayObjectAdapter(VideoCardPresenter())
+                        displayItems.forEach { listRowAdapter.add(it) }
+                        rowsAdapter.add(ListRow(header, listRowAdapter))
+                    }
+
+                    override fun onFailure(call: Call<YouTubeResponse>, t: Throwable) {
+                        t.printStackTrace()
+                    }
+                })
+        }
+
+        service.getPlaylist(playlistId = playlistId, apiKey = API_KEY)
             .enqueue(object : Callback<PlaylistTitleResponse> {
                 override fun onResponse(
                     call: Call<PlaylistTitleResponse>,
                     response: Response<PlaylistTitleResponse>
                 ) {
-                    val title = response.body()?.items?.firstOrNull()?.snippet?.title
-                    if (!title.isNullOrEmpty()) {
-                        tvPlaylistName.text = title
-                    }
+                    val title = response.body()?.items?.firstOrNull()?.snippet?.title ?: playlistId
+                    buildRow(title)
                 }
 
                 override fun onFailure(call: Call<PlaylistTitleResponse>, t: Throwable) {
                     t.printStackTrace()
+                    buildRow(playlistId)
                 }
             })
-    }
-
-    private fun fetchPlaylistVideos(fragment: BrowseSupportFragment) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://www.googleapis.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(YouTubeApiService::class.java)
-        service.getPlaylistItems(playlistId = PLAYLIST_ID, apiKey = API_KEY)
-            .enqueue(object : Callback<YouTubeResponse> {
-                override fun onResponse(
-                    call: Call<YouTubeResponse>,
-                    response: Response<YouTubeResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val allItems = response.body()?.items ?: emptyList()
-                        val embeddableItems = allItems.filter { it.status.embeddable != false }
-                        val displayItems = if (embeddableItems.isEmpty()) allItems else embeddableItems
-                        setupRows(fragment, displayItems)
-                    }
-                }
-
-                override fun onFailure(call: Call<YouTubeResponse>, t: Throwable) {
-                    t.printStackTrace()
-                }
-            })
-    }
-
-    private fun setupRows(fragment: BrowseSupportFragment, items: List<PlaylistItem>) {
-        val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
-        val cardPresenter = VideoCardPresenter()
-        val listRowAdapter = ArrayObjectAdapter(cardPresenter)
-
-        items.forEach { listRowAdapter.add(it) }
-
-        val header = HeaderItem(0, "Playlist Videos")
-        rowsAdapter.add(ListRow(header, listRowAdapter))
-        fragment.adapter = rowsAdapter
-
-        fragment.onItemViewClickedListener = OnItemViewClickedListener { _, item, _, _ ->
-            if (item is PlaylistItem) {
-                val videoIds = items.map { it.snippet.resourceId.videoId }
-                val index = items.indexOf(item)
-                val intent = Intent(this, PlayerActivity::class.java)
-                intent.putStringArrayListExtra("VIDEO_IDS", ArrayList(videoIds))
-                intent.putExtra("INDEX", index)
-                startActivity(intent)
-            }
-        }
     }
 }

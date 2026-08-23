@@ -4,7 +4,7 @@
 
 ## Tính năng
 
-- Lấy danh sách video từ YouTube Playlist qua YouTube Data API v3 và hiển thị giao diện dạng YouTube TV (Leanback).
+- Lấy danh sách video từ **tối đa 3 YouTube Playlist** qua YouTube Data API v3, mỗi playlist hiển thị thành một hàng (row) trong giao diện YouTube TV (Leanback).
 - Phát video bằng YouTube IFrame Player (thư viện `android-youtube-player`).
 - Tự động phát video tiếp theo; khi hết video cuối sẽ quay lại video đầu (vòng lặp playlist).
 - Giao diện:
@@ -35,13 +35,18 @@ Trước khi build, tạo file `local.properties` (đã nằm trong `.gitignore`
 
 ```properties
 YOUTUBE_API_KEY=YOUR_YOUTUBE_DATA_API_V3_KEY
-YOUTUBE_PLAYLIST_ID=YOUR_PLAYLIST_ID
+YOUTUBE_PLAYLIST_ID=PLAYLIST_ID_1
+YOUTUBE_PLAYLIST_ID_2=PLAYLIST_ID_2
+YOUTUBE_PLAYLIST_ID_3=PLAYLIST_ID_3
 ```
 
 - `YOUTUBE_API_KEY`: khóa YouTube Data API v3 (tạo tại Google Cloud Console).
-- `YOUTUBE_PLAYLIST_ID`: ID của playlist cần phát (ví dụ: `PLYzKnm87_04Y`).
+- `YOUTUBE_PLAYLIST_ID`: ID playlist thứ 1 (bắt buộc).
+- `YOUTUBE_PLAYLIST_ID_2`, `YOUTUBE_PLAYLIST_ID_3`: ID playlist thứ 2, 3 (tùy chọn — để trống sẽ không hiển thị hàng tương ứng).
 
-Hai giá trị này được đưa vào `BuildConfig.YOUTUBE_API_KEY` và `BuildConfig.YOUTUBE_PLAYLIST_ID` khi build.
+App hỗ trợ tối đa **3 playlist**, mỗi playlist hiển thị thành một hàng (row) riêng biệt trong giao diện, tiêu đề hàng là tên playlist. Chuyển tiếp / vòng lặp video chỉ xảy ra trong nội bộ từng playlist.
+
+Các giá trị này được đưa vào `BuildConfig.YOUTUBE_PLAYLIST_ID`, `YOUTUBE_PLAYLIST_ID_2`, `YOUTUBE_PLAYLIST_ID_3` khi build.
 
 ## Build & chạy
 
