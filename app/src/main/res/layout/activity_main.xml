@@ -9,15 +9,31 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
-        android:id="@+id/top_right"
-        android:layout_width="wrap_content"
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
+        android:layout_gravity="top"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingTop="28dp"
-        android:paddingEnd="32dp"
-        android:paddingStart="32dp">
+        android:paddingBottom="12dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp">
+
+        <TextView
+            android:id="@+id/tv_playlist_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:shadowColor="#000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4" />
 
         <ImageView
             android:id="@+id/iv_logo"

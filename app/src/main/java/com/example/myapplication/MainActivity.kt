@@ -32,6 +32,7 @@ class MainActivity : FragmentActivity() {
     private val PLAYLIST_ID = BuildConfig.YOUTUBE_PLAYLIST_ID
 
     private lateinit var tvClock: TextView
+    private lateinit var tvPlaylistName: TextView
     private val clockHandler = Handler(Looper.getMainLooper())
     private val clockRunnable = object : Runnable {
         override fun run() {
@@ -45,6 +46,8 @@ class MainActivity : FragmentActivity() {
         setContentView(R.layout.activity_main)
 
         tvClock = findViewById(R.id.tv_clock)
+        tvPlaylistName = findViewById(R.id.tv_playlist_name)
+        tvPlaylistName.text = "YouTube Playlist"
         clockHandler.post(clockRunnable)
 
         val fragment = BrowseSupportFragment()
@@ -52,10 +55,9 @@ class MainActivity : FragmentActivity() {
             .replace(R.id.main_frame, fragment)
             .commitNow()
 
-        fragment.title = "YouTube Playlist"
         fragment.headersState = BrowseSupportFragment.HEADERS_ENABLED
 
-        fetchPlaylistTitle(fragment)
+        fetchPlaylistTitle()
         fetchPlaylistVideos(fragment)
     }
 
@@ -64,7 +66,7 @@ class MainActivity : FragmentActivity() {
         clockHandler.removeCallbacks(clockRunnable)
     }
 
-    private fun fetchPlaylistTitle(fragment: BrowseSupportFragment) {
+    private fun fetchPlaylistTitle() {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://www.googleapis.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -79,7 +81,7 @@ class MainActivity : FragmentActivity() {
                 ) {
                     val title = response.body()?.items?.firstOrNull()?.snippet?.title
                     if (!title.isNullOrEmpty()) {
-                        fragment.title = title
+                        tvPlaylistName.text = title
                     }
                 }
 
