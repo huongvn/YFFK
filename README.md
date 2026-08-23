@@ -8,13 +8,15 @@
 - Phát video bằng YouTube IFrame Player (thư viện `android-youtube-player`).
 - Tự động phát video tiếp theo; khi hết video cuối sẽ quay lại video đầu (vòng lặp playlist).
 - Giao diện:
-  - Góc trái: tên playlist.
+  - Góc trái: tên playlist và **thời gian đã mở app** (tính bằng phút, đếm từ lúc mở ứng dụng, reset khi tắt app).
   - Góc phải: logo YouTube, đồng hồ thời gian thực và nút cài đặt (bánh răng).
+- **Hẹn giờ xem**: giới hạn số phút được xem; khi vượt quá sẽ không cho phát video nào và hiển thị thông báo. Có nút reset bộ đếm.
 - Trang Cài đặt MQTT:
   - Cấu hình kết nối đến broker (broker, client id, username, password, topic).
-  - Kết nối / ngắt kết nối, lưu cấu hình.
-  - Tự động kết nối lại khi mở app (nếu trước đó đã kết nối).
-- Điều khiển video từ xa qua MQTT: `play` (tiếp tục), `stop` (tạm dừng), `next` (video kế tiếp).
+  - 3 nút riêng biệt: **Lưu** (chỉ lưu cấu hình), **Kết nối** (lưu + nối broker), **Ngắt kết nối**.
+  - Hiển thị **IP local** của TV.
+  - Tự động kết nối lại khi mở app (nếu trước đó đã kết nối), có cơ chế tự động reconnect và retry khi rớt kết nối.
+- Điều khiển video từ xa qua MQTT: chỉ chấp nhận `play` (tiếp tục), `stop` (tạm dừng), `next` (video kế tiếp); mọi nội dung khác bị bỏ qua.
 
 ## Công nghệ
 
@@ -80,8 +82,12 @@ Trong trang Cài đặt:
 - **Client ID**: để trống sẽ tự sinh.
 - **Username / Password**: điền nếu broker yêu cầu xác thực.
 - **Topic**: topic sẽ subscribe (mặc định `yffk/youtube-tv/command`).
-- Bấm **Kết nối**. Trạng thái hiển thị bên dưới nút.
-- Cấu hình được lưu lại; lần sau mở app sẽ tự động kết nối nếu trước đó đang kết nối.
+- **IP local**: hiển thị địa chỉ IP của TV (dùng để `adb connect` hoặc cấu hình mạng).
+- Ba nút:
+  - **Lưu**: chỉ lưu cấu hình broker/topic/... vào thiết bị, không kết nối.
+  - **Kết nối**: lưu cấu hình + kết nối broker (và bật tự động kết nối khi mở app lần sau).
+  - **Ngắt kết nối**: ngắt kết nối + tắt tự động kết nối.
+- Trạng thái kết nối được đồng bộ thực tế mỗi khi mở trang (Đã kết nối / Đang kết nối... / Chưa kết nối).
 
 ### Định dạng tin nhắn điều khiển
 
@@ -102,19 +108,38 @@ Publish lên topic đã cấu hình (mặc định `yffk/youtube-tv/command`) m�
 ```
 > Chuyển sang video kế tiếp trong playlist.
 
-Tin nhắn có thể là JSON như trên, hoặc chỉ là chuỗi thuần (`play` / `stop` / `next`) — app đều hiểu.
+Tin nhắn có thể là JSON như trên, hoặc chỉ là chuỗi thuần (`play` / `stop` / `next`) — app đều hiểu. **Chỉ 3 lệnh trên được chấp nhận**, mọi nội dung khác bị bỏ qua hoàn toàn.
+
+### Hẹn giờ xem
+
+Trong trang Cài đặt, mục hẹn giờ:
+
+- **Số phút tối đa được xem**: nhập số nguyên > 0 (mặc định `60`).
+- Nút **Lưu thông số**: lưu giới hạn phút (lưu vào thiết bị).
+- Nút **Reset bộ đếm**: đưa bộ đếm thời gian mở app về 0 → xem bình thường trở lại.
+
+Quy tắc:
+
+- Thời gian mở app đếm từ lúc khởi động ứng dụng, hiển thị ở góc trái (cạnh tên playlist) theo số phút.
+- Khi `thời gian mở app > số phút tối đa`:
+  - Không cho phát bất kỳ video nào (kể cả chuyển video tiếp theo hay lệnh MQTT `play`).
+  - Hiện thông báo **"Bạn đã xem quá số phút cho phép"**.
+  - Nếu đang phát, video sẽ tự động tạm dừng.
+- Sau khi bấm **Reset bộ đếm**, chức năng xem hoạt động bình thường lại.
+- Khi tắt app rồi mở lại, bộ đếm tự động về 0.
 
 ## Cấu trúc mã nguồn
 
 ```
 app/src/main/java/com/example/myapplication/
-├── MainActivity.kt              # Màn hình chính (Leanback), top bar, auto-connect MQTT
-├── PlayerActivity.kt            # Phát video, tự động next, nhận lệnh MQTT
-├── SettingsActivity.kt          # Trang cài đặt MQTT
+├── MainActivity.kt              # Màn hình chính (Leanback), top bar, uptime, auto-connect MQTT
+├── PlayerActivity.kt            # Phát video, tự động next, chặn khi quá hạn, nhận lệnh MQTT
+├── SettingsActivity.kt          # Trang cài đặt MQTT + hẹn giờ xem
+├── SessionTimer.kt              # Bộ đếm thời gian mở app + giới hạn phút (singleton)
 ├── model/                       # Model YouTube API + MQTT command
 ├── network/YouTubeApiService.kt # Retrofit API (playlistItems, playlists)
 ├── ui/VideoCardPresenter.kt     # Card video trên Leanback
 └── mqtt/
-    ├── MqttController.kt        # Singleton kết nối MQTT + parse tin nhắn
+    ├── MqttController.kt        # Singleton kết nối MQTT + parse/validate tin nhắn
     └── PlaybackCommandBus.kt    # Event bus chuyển lệnh tới PlayerActivity
 ```
