@@ -7,6 +7,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.mqtt.MqttController
+import java.net.Inet4Address
+import java.net.NetworkInterface
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -18,6 +20,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var etTopic: EditText
     private lateinit var btnConnect: Button
     private lateinit var tvStatus: TextView
+    private lateinit var tvIp: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,8 @@ class SettingsActivity : AppCompatActivity() {
         etTopic = findViewById(R.id.et_topic)
         btnConnect = findViewById(R.id.btn_connect)
         tvStatus = findViewById(R.id.tv_status)
+        tvIp = findViewById(R.id.tv_ip)
+        tvIp.text = "IP local: ${getLocalIpAddress()}"
 
         etBroker.setText(prefs.getString("mqtt_broker", "tcp://broker.hivemq.com:1883"))
         etClientId.setText(prefs.getString("mqtt_client_id", ""))
@@ -81,5 +86,23 @@ class SettingsActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         MqttController.onState = null
+    }
+
+    private fun getLocalIpAddress(): String {
+        return try {
+            val interfaces = NetworkInterface.getNetworkInterfaces()
+            for (intf in interfaces) {
+                val addresses = intf.inetAddresses
+                for (addr in addresses) {
+                    if (!addr.isLoopbackAddress && addr is Inet4Address) {
+                        return addr.hostAddress ?: "Không xác định"
+                    }
+                }
+            }
+            "Không xác định"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "Không xác định"
+        }
     }
 }

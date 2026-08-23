@@ -125,6 +125,15 @@
             android:text="Chưa kết nối"
             android:textColor="#FFCC00"
             android:textSize="14sp"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/tv_ip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="IP local: ..."
+            android:textColor="#88FFFFFF"
+            android:textSize="13sp"
             android:layout_marginBottom="14dp" />
 
         <TextView

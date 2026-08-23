@@ -1,6 +1,6 @@
-# YFFK — YouTube TV Player
+# YFFK — YouTube For Far Kid
 
-Ứng dụng Android TV (Kotlin) chạy trên Xiaomi HyperOS TV, dùng để phát danh sách video từ một YouTube Playlist và điều khiển phát bằng MQTT (từ xa).
+Ứng dụng YFFK chạy trên Android TV, dùng để phát danh sách video từ một YouTube Playlist và điều khiển phát bằng MQTT (từ xa).
 
 ## Tính năng
 
