@@ -48,6 +48,11 @@ class SettingsActivity : AppCompatActivity() {
             updateButton()
         }
 
+        tvStatus.text = when {
+            MqttController.isConnected() -> "Đã kết nối"
+            prefs.getBoolean("mqtt_connected", false) -> "Đang kết nối..."
+            else -> "Chưa kết nối"
+        }
         updateButton()
 
         btnConnect.setOnClickListener {
