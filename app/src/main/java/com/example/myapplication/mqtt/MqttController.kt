@@ -118,13 +118,16 @@ object MqttController {
         }
     }
 
+    private val ALLOWED_ACTIONS = setOf("play", "stop", "next")
+
     private fun parseAction(payload: String): String {
-        return try {
+        val raw = try {
             val cmd = Gson().fromJson(payload, MqttCommand::class.java)
-            cmd?.action?.trim()?.lowercase() ?: payload
+            cmd?.action?.trim()?.lowercase()
         } catch (e: Exception) {
-            payload.lowercase()
+            payload.trim().lowercase()
         }
+        return if (raw != null && raw in ALLOWED_ACTIONS) raw else ""
     }
 
     fun disconnect() {
