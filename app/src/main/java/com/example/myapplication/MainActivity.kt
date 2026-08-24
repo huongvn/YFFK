@@ -20,6 +20,7 @@ import com.example.myapplication.model.PlaylistTitleResponse
 import com.example.myapplication.model.YouTubeResponse
 import com.example.myapplication.mqtt.MqttController
 import com.example.myapplication.network.YouTubeApiService
+import com.example.myapplication.ui.PlaylistHeaderPresenter
 import com.example.myapplication.ui.VideoCardPresenter
 import retrofit2.Call
 import retrofit2.Callback
@@ -89,7 +90,9 @@ class MainActivity : FragmentActivity() {
 
         fragment.headersState = BrowseSupportFragment.HEADERS_ENABLED
 
-        rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
+        rowsAdapter = ArrayObjectAdapter(ListRowPresenter().apply {
+            headerPresenter = PlaylistHeaderPresenter()
+        })
         fragment.adapter = rowsAdapter
         fragment.onItemViewClickedListener = OnItemViewClickedListener { _, item, _, _ ->
             if (item is PlaylistItem) {
