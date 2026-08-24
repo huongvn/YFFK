@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.view.KeyEvent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import androidx.leanback.widget.HeaderItem
 import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.OnItemViewClickedListener
+import androidx.leanback.widget.Row
 import com.example.myapplication.model.PlaylistItem
 import com.example.myapplication.model.PlaylistTitleResponse
 import com.example.myapplication.model.YouTubeResponse
@@ -39,11 +41,13 @@ class MainActivity : FragmentActivity() {
     private lateinit var tvClock: TextView
     private lateinit var tvPlaylistName: TextView
     private lateinit var tvUptime: TextView
+    private lateinit var ivSettings: ImageView
     private lateinit var rowsAdapter: ArrayObjectAdapter
     private lateinit var fragment: BrowseSupportFragment
     private val playlistVideoMap = mutableMapOf<String, Pair<List<String>, Int>>()
     private var rowId = 0
     private var lastConfigSignature: String = ""
+    private var currentRowPosition = 0
 
     private val retrofit by lazy {
         Retrofit.Builder()
@@ -86,7 +90,8 @@ class MainActivity : FragmentActivity() {
 
         loadConfig(prefs)
 
-        findViewById<ImageView>(R.id.iv_settings).setOnClickListener {
+        ivSettings = findViewById(R.id.iv_settings)
+        ivSettings.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
@@ -103,6 +108,9 @@ class MainActivity : FragmentActivity() {
             headerPresenter = PlaylistHeaderPresenter()
         })
         fragment.adapter = rowsAdapter
+        fragment.setOnItemViewSelectedListener { _, _, _, row ->
+            currentRowPosition = (row as? Row)?.let { rowsAdapter.indexOf(it) } ?: 0
+        }
         fragment.onItemViewClickedListener = OnItemViewClickedListener { _, item, _, _ ->
             if (item is PlaylistItem) {
                 val videoId = item.snippet?.resourceId?.videoId ?: return@OnItemViewClickedListener
@@ -125,6 +133,26 @@ class MainActivity : FragmentActivity() {
             loadConfig(prefs)
             loadPlaylists()
         }
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            when (event.keyCode) {
+                KeyEvent.KEYCODE_DPAD_UP -> {
+                    if (!ivSettings.hasFocus() && currentRowPosition == 0) {
+                        ivSettings.requestFocus()
+                        return true
+                    }
+                }
+                KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    if (ivSettings.hasFocus()) {
+                        fragment.view?.requestFocus()
+                        return true
+                    }
+                }
+            }
+        }
+        return super.dispatchKeyEvent(event)
     }
 
     private fun configSignature(prefs: SharedPreferences): String {
