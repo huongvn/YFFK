@@ -5,34 +5,14 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-val youtubeApiKey: String = Properties().run {
+val localProps = Properties().apply {
     val localFile = rootProject.file("local.properties")
     if (localFile.exists()) {
         localFile.inputStream().use { load(it) }
     }
-    getProperty("YOUTUBE_API_KEY") ?: ""
 }
-val youtubePlaylistId: String = Properties().run {
-    val localFile = rootProject.file("local.properties")
-    if (localFile.exists()) {
-        localFile.inputStream().use { load(it) }
-    }
-    getProperty("YOUTUBE_PLAYLIST_ID") ?: ""
-}
-val youtubePlaylistId2: String = Properties().run {
-    val localFile = rootProject.file("local.properties")
-    if (localFile.exists()) {
-        localFile.inputStream().use { load(it) }
-    }
-    getProperty("YOUTUBE_PLAYLIST_ID_2") ?: ""
-}
-val youtubePlaylistId3: String = Properties().run {
-    val localFile = rootProject.file("local.properties")
-    if (localFile.exists()) {
-        localFile.inputStream().use { load(it) }
-    }
-    getProperty("YOUTUBE_PLAYLIST_ID_3") ?: ""
-}
+
+val youtubeApiKey: String = localProps.getProperty("YOUTUBE_API_KEY") ?: ""
 
 android {
     namespace = "com.example.myapplication"
@@ -46,9 +26,11 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "YOUTUBE_API_KEY", "\"$youtubeApiKey\"")
-        buildConfigField("String", "YOUTUBE_PLAYLIST_ID", "\"$youtubePlaylistId\"")
-        buildConfigField("String", "YOUTUBE_PLAYLIST_ID_2", "\"$youtubePlaylistId2\"")
-        buildConfigField("String", "YOUTUBE_PLAYLIST_ID_3", "\"$youtubePlaylistId3\"")
+        for (i in 1..20) {
+            val propName = if (i == 1) "YOUTUBE_PLAYLIST_ID" else "YOUTUBE_PLAYLIST_ID_$i"
+            val value = localProps.getProperty(propName) ?: ""
+            buildConfigField("String", "YOUTUBE_PLAYLIST_ID_$i", "\"$value\"")
+        }
     }
 
     buildTypes {

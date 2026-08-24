@@ -4,7 +4,7 @@
 
 ## Tính năng
 
-- Lấy danh sách video từ **tối đa 3 YouTube Playlist** qua YouTube Data API v3, mỗi playlist hiển thị thành một hàng (row) trong giao diện YouTube TV (Leanback).
+- Lấy danh sách video từ **tối đa 20 YouTube Playlist** qua YouTube Data API v3, mỗi playlist hiển thị thành một hàng (row) trong giao diện YouTube TV (Leanback).
 - Phát video bằng YouTube IFrame Player (thư viện `android-youtube-player`).
 - Tự động phát video tiếp theo; khi hết video cuối sẽ quay lại video đầu (vòng lặp playlist).
 - Giao diện:
@@ -35,18 +35,20 @@ Trước khi build, tạo file `local.properties` (đã nằm trong `.gitignore`
 
 ```properties
 YOUTUBE_API_KEY=YOUR_YOUTUBE_DATA_API_V3_KEY
-YOUTUBE_PLAYLIST_ID=PLAYLIST_ID_1
-YOUTUBE_PLAYLIST_ID_2=PLAYLIST_ID_2
-YOUTUBE_PLAYLIST_ID_3=PLAYLIST_ID_3
+YOUTUBE_PLAYLIST_ID=PLAYLIST_ID_1        # playlist 1 (bắt buộc)
+YOUTUBE_PLAYLIST_ID_2=PLAYLIST_ID_2      # playlist 2
+YOUTUBE_PLAYLIST_ID_3=PLAYLIST_ID_3      # playlist 3
+...                                      # có thể thêm đến
+YOUTUBE_PLAYLIST_ID_20=PLAYLIST_ID_20    # playlist 20 (tất cả tuỳ chọn, để trống sẽ bỏ qua)
 ```
 
 - `YOUTUBE_API_KEY`: khóa YouTube Data API v3 (tạo tại Google Cloud Console).
 - `YOUTUBE_PLAYLIST_ID`: ID playlist thứ 1 (bắt buộc).
-- `YOUTUBE_PLAYLIST_ID_2`, `YOUTUBE_PLAYLIST_ID_3`: ID playlist thứ 2, 3 (tùy chọn — để trống sẽ không hiển thị hàng tương ứng).
+- `YOUTUBE_PLAYLIST_ID_2` ... `YOUTUBE_PLAYLIST_ID_20`: ID playlist thứ 2–20 (tùy chọn — để trống sẽ không hiển thị hàng tương ứng).
 
-App hỗ trợ tối đa **3 playlist**, mỗi playlist hiển thị thành một hàng (row) riêng biệt trong giao diện, tiêu đề hàng là tên playlist. Chuyển tiếp / vòng lặp video chỉ xảy ra trong nội bộ từng playlist.
+App hỗ trợ tối đa **20 playlist**, mỗi playlist hiển thị thành một hàng (row) riêng biệt trong giao diện, tiêu đề hàng là tên playlist. Chuyển tiếp / vòng lặp video chỉ xảy ra trong nội bộ từng playlist.
 
-Các giá trị trong `local.properties` là **mặc định lúc build** (truyền vào `BuildConfig`). Khi chạy app, bạn có thể đổi chúng trực tiếp trên màn hình **Cài đặt** (cột 2 – "Cấu hình YouTube": API Key, Playlist ID 1/2/3) và bấm **Lưu cấu hình YouTube**; lúc đó trang chính sẽ tự tải lại. Nếu để trống một Playlist ID, hàng tương ứng sẽ không hiển thị trên trang chính.
+Các giá trị trong `local.properties` là **mặc định lúc build** (truyền vào `BuildConfig`). Khi chạy app, bạn có thể đổi chúng trực tiếp trên màn hình **Cài đặt** (cột 2 – "Cấu hình YouTube": API Key, và một ô nhiều dòng chứa danh sách Playlist ID, mỗi dòng một ID, tối đa 20) rồi bấm **Lưu cấu hình YouTube**; lúc đó trang chính sẽ tự tải lại. Nếu để trống một Playlist ID, hàng tương ứng sẽ không hiển thị trên trang chính.
 
 ## Build & chạy
 

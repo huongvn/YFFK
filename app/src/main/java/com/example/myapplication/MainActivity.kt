@@ -128,17 +128,24 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun computePlaylistIds(prefs: SharedPreferences): List<String> {
-        val fromPrefs = listOf(
-            prefs.getString("yt_pl_1", "") ?: "",
-            prefs.getString("yt_pl_2", "") ?: "",
-            prefs.getString("yt_pl_3", "") ?: ""
-        ).map { it.trim() }.filter { it.isNotEmpty() }
-        return if (fromPrefs.isNotEmpty()) fromPrefs else {
-            listOf(
-                BuildConfig.YOUTUBE_PLAYLIST_ID,
-                BuildConfig.YOUTUBE_PLAYLIST_ID_2,
-                BuildConfig.YOUTUBE_PLAYLIST_ID_3
-            ).map { it.trim() }.filter { it.isNotEmpty() }
+        val raw = prefs.getString("yt_playlist_ids", "") ?: ""
+        val fromPrefs = raw.split('\n', ',', ';')
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+        return if (fromPrefs.isNotEmpty()) {
+            fromPrefs.take(20)
+        } else {
+            val defaults = mutableListOf<String>()
+            for (i in 1..20) {
+                val field = try {
+                    BuildConfig::class.java.getField("YOUTUBE_PLAYLIST_ID_$i")
+                } catch (e: Exception) {
+                    null
+                }
+                val value = field?.get(null) as? String
+                if (!value.isNullOrEmpty()) defaults.add(value)
+            }
+            defaults.take(20)
         }
     }
 

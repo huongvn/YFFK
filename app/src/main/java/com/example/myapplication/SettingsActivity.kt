@@ -30,9 +30,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var tvStatus: TextView
     private lateinit var tvIp: TextView
     private lateinit var etApiKey: EditText
-    private lateinit var etPlaylist1: EditText
-    private lateinit var etPlaylist2: EditText
-    private lateinit var etPlaylist3: EditText
+    private lateinit var etPlaylists: EditText
     private lateinit var btnSaveYoutube: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,9 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         tvStatus = findViewById(R.id.tv_status)
         tvIp = findViewById(R.id.tv_ip)
         etApiKey = findViewById(R.id.et_api_key)
-        etPlaylist1 = findViewById(R.id.et_playlist_1)
-        etPlaylist2 = findViewById(R.id.et_playlist_2)
-        etPlaylist3 = findViewById(R.id.et_playlist_3)
+        etPlaylists = findViewById(R.id.et_playlists)
         btnSaveYoutube = findViewById(R.id.btn_save_youtube)
         tvIp.text = "IP local: ${getLocalIpAddress()}"
 
@@ -71,12 +67,8 @@ class SettingsActivity : AppCompatActivity() {
 
         etApiKey.setText(prefs.getString("yt_api_key", "") ?: "")
         if (etApiKey.text.isEmpty()) etApiKey.setText(BuildConfig.YOUTUBE_API_KEY)
-        etPlaylist1.setText(prefs.getString("yt_pl_1", "") ?: "")
-        if (etPlaylist1.text.isEmpty()) etPlaylist1.setText(BuildConfig.YOUTUBE_PLAYLIST_ID)
-        etPlaylist2.setText(prefs.getString("yt_pl_2", "") ?: "")
-        if (etPlaylist2.text.isEmpty()) etPlaylist2.setText(BuildConfig.YOUTUBE_PLAYLIST_ID_2)
-        etPlaylist3.setText(prefs.getString("yt_pl_3", "") ?: "")
-        if (etPlaylist3.text.isEmpty()) etPlaylist3.setText(BuildConfig.YOUTUBE_PLAYLIST_ID_3)
+        etPlaylists.setText(prefs.getString("yt_playlist_ids", "") ?: "")
+        if (etPlaylists.text.isEmpty()) etPlaylists.setText(defaultPlaylistIdsJoined())
 
         MqttController.onState = { status ->
             tvStatus.text = status
@@ -133,16 +125,33 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         btnSaveYoutube.setOnClickListener {
+            val ids = etPlaylists.text.toString()
+                .split('\n', ',', ';')
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .take(20)
             prefs.edit()
                 .putString("yt_api_key", etApiKey.text.toString().trim())
-                .putString("yt_pl_1", etPlaylist1.text.toString().trim())
-                .putString("yt_pl_2", etPlaylist2.text.toString().trim())
-                .putString("yt_pl_3", etPlaylist3.text.toString().trim())
+                .putString("yt_playlist_ids", ids.joinToString("\n"))
                 .apply()
             tvStatus.text = "Đã lưu cấu hình YouTube"
             Toast.makeText(this, "Đã lưu, quay lại để tải lại trang chính", Toast.LENGTH_SHORT).show()
             finish()
         }
+    }
+
+    private fun defaultPlaylistIdsJoined(): String {
+        val result = mutableListOf<String>()
+        for (i in 1..20) {
+            val field = try {
+                BuildConfig::class.java.getField("YOUTUBE_PLAYLIST_ID_$i")
+            } catch (e: Exception) {
+                null
+            }
+            val value = field?.get(null) as? String
+            if (!value.isNullOrEmpty()) result.add(value)
+        }
+        return result.joinToString("\n")
     }
 
     private fun saveFields() {

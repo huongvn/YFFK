@@ -266,51 +266,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Playlist ID 1"
+                android:text="Playlist IDs (mỗi dòng một ID, tối đa 20)"
                 android:textColor="#AAAAAA"
                 android:textSize="7sp" />
 
             <EditText
-                android:id="@+id/et_playlist_1"
+                android:id="@+id/et_playlists"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minLines="5"
+                android:gravity="top"
                 android:textSize="8sp"
                 android:textColor="#FFFFFF"
-                android:inputType="text"
-                android:importantForAutofill="no"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Playlist ID 2 (tuỳ chọn)"
-                android:textColor="#AAAAAA"
-                android:textSize="7sp" />
-
-            <EditText
-                android:id="@+id/et_playlist_2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="8sp"
-                android:textColor="#FFFFFF"
-                android:inputType="text"
-                android:importantForAutofill="no"
-                android:layout_marginBottom="8dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Playlist ID 3 (tuỳ chọn)"
-                android:textColor="#AAAAAA"
-                android:textSize="7sp" />
-
-            <EditText
-                android:id="@+id/et_playlist_3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="8sp"
-                android:textColor="#FFFFFF"
-                android:inputType="text"
+                android:inputType="textMultiLine|text"
                 android:importantForAutofill="no"
                 android:layout_marginBottom="10dp" />
 
