@@ -11,6 +11,9 @@ import com.example.myapplication.R
 
 class PlaylistHeaderPresenter : RowHeaderPresenter() {
 
+    private val SIZE_UNSELECTED = 11f
+    private val SIZE_SELECTED = 15f
+
     class ViewHolder(view: View) : RowHeaderPresenter.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.header_title)
     }
@@ -25,6 +28,7 @@ class PlaylistHeaderPresenter : RowHeaderPresenter() {
         val holder = viewHolder as ViewHolder
         val headerItem = item as? HeaderItem
         holder.title.text = headerItem?.name ?: ""
+        holder.title.textSize = SIZE_UNSELECTED
         holder.view.alpha = 0.55f
     }
 
@@ -32,6 +36,8 @@ class PlaylistHeaderPresenter : RowHeaderPresenter() {
 
     override fun onSelectLevelChanged(viewHolder: RowHeaderPresenter.ViewHolder?) {
         val holder = viewHolder as? ViewHolder ?: return
-        holder.view.alpha = 0.55f + 0.45f * viewHolder.selectLevel
+        val level = viewHolder.selectLevel
+        holder.view.alpha = 0.55f + 0.45f * level
+        holder.title.textSize = if (level > 0.5f) SIZE_SELECTED else SIZE_UNSELECTED
     }
 }
