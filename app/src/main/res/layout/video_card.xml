@@ -10,6 +10,7 @@
         android:layout_width="160dp"
         android:layout_height="90dp"
         android:scaleType="centerCrop"
+        android:background="#222222"
         android:contentDescription="@string/video_thumbnail" />
 
     <TextView

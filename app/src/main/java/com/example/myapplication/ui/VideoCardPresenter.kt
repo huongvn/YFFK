@@ -29,7 +29,10 @@ class VideoCardPresenter : Presenter() {
         if (!url.isNullOrEmpty()) {
             Glide.with(context)
                 .load(url)
+                .placeholder(android.R.color.darker_gray)
+                .error(android.R.color.darker_gray)
                 .centerCrop()
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                 .into(thumbnail)
         }
 
