@@ -45,6 +45,15 @@ class MainActivity : FragmentActivity() {
     private var rowId = 0
     private var lastConfigSignature: String = ""
 
+    private val retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://www.googleapis.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    private val youTubeService by lazy { retrofit.create(YouTubeApiService::class.java) }
+    private val pendingCalls = mutableListOf<Call<*>>()
+
     private val clockHandler = Handler(Looper.getMainLooper())
     private val clockRunnable = object : Runnable {
         override fun run() {
@@ -153,14 +162,18 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun loadPlaylists() {
+        pendingCalls.forEach { it.cancel() }
+        pendingCalls.clear()
         playlistVideoMap.clear()
         rowId = 0
         rowsAdapter.clear()
-        playlistIds.forEach { loadPlaylist(fragment, it) }
+        playlistIds.forEach { loadPlaylist(it) }
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        pendingCalls.forEach { it.cancel() }
+        pendingCalls.clear()
         clockHandler.removeCallbacks(clockRunnable)
         uptimeHandler.removeCallbacks(uptimeRunnable)
     }
@@ -178,56 +191,56 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    private fun loadPlaylist(fragment: BrowseSupportFragment, playlistId: String) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://www.googleapis.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val service = retrofit.create(YouTubeApiService::class.java)
-
+    private fun loadPlaylist(playlistId: String) {
         fun buildRow(title: String) {
-            service.getPlaylistItems(playlistId = playlistId, apiKey = apiKey)
-                .enqueue(object : Callback<YouTubeResponse> {
-                    override fun onResponse(call: Call<YouTubeResponse>, response: Response<YouTubeResponse>) {
-                        if (!response.isSuccessful) return
-                        val allItems = response.body()?.items ?: emptyList()
-                        val embeddableItems = allItems.filter { it.status?.embeddable != false }
-                        val displayItems = if (embeddableItems.isEmpty()) allItems else embeddableItems
-                        if (displayItems.isEmpty()) return
+            val itemsCall = youTubeService.getPlaylistItems(playlistId = playlistId, apiKey = apiKey)
+            pendingCalls.add(itemsCall)
+            itemsCall.enqueue(object : Callback<YouTubeResponse> {
+                override fun onResponse(call: Call<YouTubeResponse>, response: Response<YouTubeResponse>) {
+                    pendingCalls.remove(call)
+                    if (!response.isSuccessful) return
+                    val allItems = response.body()?.items ?: emptyList()
+                    val embeddableItems = allItems.filter { it.status?.embeddable != false }
+                    val displayItems = if (embeddableItems.isEmpty()) allItems else embeddableItems
+                    if (displayItems.isEmpty()) return
 
-                        val videoIds = displayItems.mapNotNull { it.snippet?.resourceId?.videoId }
-                        displayItems.forEachIndexed { idx, it ->
-                            it.snippet?.resourceId?.videoId?.let { vid ->
-                                playlistVideoMap[vid] = Pair(videoIds, idx)
-                            }
+                    val videoIds = displayItems.mapNotNull { it.snippet?.resourceId?.videoId }
+                    displayItems.forEachIndexed { idx, it ->
+                        it.snippet?.resourceId?.videoId?.let { vid ->
+                            playlistVideoMap[vid] = Pair(videoIds, idx)
                         }
-
-                        val header = HeaderItem(rowId++.toLong(), title)
-                        val listRowAdapter = ArrayObjectAdapter(VideoCardPresenter())
-                        displayItems.forEach { listRowAdapter.add(it) }
-                        rowsAdapter.add(ListRow(header, listRowAdapter))
                     }
 
-                    override fun onFailure(call: Call<YouTubeResponse>, t: Throwable) {
-                        t.printStackTrace()
-                    }
-                })
-        }
-
-        service.getPlaylist(playlistId = playlistId, apiKey = apiKey)
-            .enqueue(object : Callback<PlaylistTitleResponse> {
-                override fun onResponse(
-                    call: Call<PlaylistTitleResponse>,
-                    response: Response<PlaylistTitleResponse>
-                ) {
-                    val title = response.body()?.items?.firstOrNull()?.snippet?.title ?: playlistId
-                    buildRow(title)
+                    val header = HeaderItem(rowId++.toLong(), title)
+                    val listRowAdapter = ArrayObjectAdapter(VideoCardPresenter())
+                    displayItems.forEach { listRowAdapter.add(it) }
+                    rowsAdapter.add(ListRow(header, listRowAdapter))
                 }
 
-                override fun onFailure(call: Call<PlaylistTitleResponse>, t: Throwable) {
+                override fun onFailure(call: Call<YouTubeResponse>, t: Throwable) {
+                    pendingCalls.remove(call)
                     t.printStackTrace()
-                    buildRow(playlistId)
                 }
             })
+        }
+
+        val titleCall = youTubeService.getPlaylist(playlistId = playlistId, apiKey = apiKey)
+        pendingCalls.add(titleCall)
+        titleCall.enqueue(object : Callback<PlaylistTitleResponse> {
+            override fun onResponse(
+                call: Call<PlaylistTitleResponse>,
+                response: Response<PlaylistTitleResponse>
+            ) {
+                pendingCalls.remove(call)
+                val title = response.body()?.items?.firstOrNull()?.snippet?.title ?: playlistId
+                buildRow(title)
+            }
+
+            override fun onFailure(call: Call<PlaylistTitleResponse>, t: Throwable) {
+                pendingCalls.remove(call)
+                t.printStackTrace()
+                buildRow(playlistId)
+            }
+        })
     }
 }
