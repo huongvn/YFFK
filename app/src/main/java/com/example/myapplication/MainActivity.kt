@@ -198,11 +198,13 @@ class MainActivity : FragmentActivity() {
             itemsCall.enqueue(object : Callback<YouTubeResponse> {
                 override fun onResponse(call: Call<YouTubeResponse>, response: Response<YouTubeResponse>) {
                     pendingCalls.remove(call)
-                    if (!response.isSuccessful) return
-                    val allItems = response.body()?.items ?: emptyList()
-                    val embeddableItems = allItems.filter { it.status?.embeddable != false }
-                    val displayItems = if (embeddableItems.isEmpty()) allItems else embeddableItems
-                    if (displayItems.isEmpty()) return
+                        if (!response.isSuccessful) return
+                        val allItems = response.body()?.items ?: emptyList()
+                        val displayItems = allItems.filter { item ->
+                            val s = item.status
+                            s == null || (s.embeddable != false && s.privacyStatus != "private")
+                        }
+                        if (displayItems.isEmpty()) return
 
                     val videoIds = displayItems.mapNotNull { it.snippet?.resourceId?.videoId }
                     displayItems.forEachIndexed { idx, it ->

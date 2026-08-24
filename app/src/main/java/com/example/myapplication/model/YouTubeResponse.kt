@@ -16,7 +16,8 @@ data class Snippet(
 )
 
 data class Status(
-    val embeddable: Boolean? = null
+    val embeddable: Boolean? = null,
+    val privacyStatus: String? = null
 )
 
 data class ResourceId(
