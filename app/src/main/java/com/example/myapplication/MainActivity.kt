@@ -93,7 +93,7 @@ class MainActivity : FragmentActivity() {
         fragment.adapter = rowsAdapter
         fragment.onItemViewClickedListener = OnItemViewClickedListener { _, item, _, _ ->
             if (item is PlaylistItem) {
-                val videoId = item.snippet.resourceId.videoId ?: return@OnItemViewClickedListener
+                val videoId = item.snippet?.resourceId?.videoId ?: return@OnItemViewClickedListener
                 val entry = playlistVideoMap[videoId] ?: return@OnItemViewClickedListener
                 val intent = Intent(this, PlayerActivity::class.java)
                 intent.putStringArrayListExtra("VIDEO_IDS", ArrayList(entry.first))
@@ -188,13 +188,13 @@ class MainActivity : FragmentActivity() {
                     override fun onResponse(call: Call<YouTubeResponse>, response: Response<YouTubeResponse>) {
                         if (!response.isSuccessful) return
                         val allItems = response.body()?.items ?: emptyList()
-                        val embeddableItems = allItems.filter { it.status.embeddable != false }
+                        val embeddableItems = allItems.filter { it.status?.embeddable != false }
                         val displayItems = if (embeddableItems.isEmpty()) allItems else embeddableItems
                         if (displayItems.isEmpty()) return
 
-                        val videoIds = displayItems.mapNotNull { it.snippet.resourceId.videoId }
+                        val videoIds = displayItems.mapNotNull { it.snippet?.resourceId?.videoId }
                         displayItems.forEachIndexed { idx, it ->
-                            it.snippet.resourceId.videoId?.let { vid ->
+                            it.snippet?.resourceId?.videoId?.let { vid ->
                                 playlistVideoMap[vid] = Pair(videoIds, idx)
                             }
                         }

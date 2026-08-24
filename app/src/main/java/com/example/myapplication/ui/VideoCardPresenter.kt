@@ -25,12 +25,15 @@ class VideoCardPresenter : Presenter() {
         val thumbnail = viewHolder.view.findViewById<ImageView>(R.id.video_thumbnail)
         val title = viewHolder.view.findViewById<TextView>(R.id.video_title)
 
-        Glide.with(context)
-            .load(item.snippet.thumbnails.medium.url)
-            .centerCrop()
-            .into(thumbnail)
+        val url = item.snippet?.thumbnails?.medium?.url
+        if (!url.isNullOrEmpty()) {
+            Glide.with(context)
+                .load(url)
+                .centerCrop()
+                .into(thumbnail)
+        }
 
-        title.text = item.snippet.title
+        title.text = item.snippet?.title ?: ""
     }
 
     override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {

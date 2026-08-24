@@ -1,18 +1,18 @@
 package com.example.myapplication.model
 
 data class YouTubeResponse(
-    val items: List<PlaylistItem>
+    val items: List<PlaylistItem>? = null
 )
 
 data class PlaylistItem(
-    val snippet: Snippet,
-    val status: Status
+    val snippet: Snippet? = null,
+    val status: Status? = null
 )
 
 data class Snippet(
-    val title: String,
-    val resourceId: ResourceId,
-    val thumbnails: Thumbnails
+    val title: String? = null,
+    val resourceId: ResourceId? = null,
+    val thumbnails: Thumbnails? = null
 )
 
 data class Status(
@@ -20,13 +20,13 @@ data class Status(
 )
 
 data class ResourceId(
-    val videoId: String
+    val videoId: String? = null
 )
 
 data class Thumbnails(
-    val medium: ThumbnailUrl
+    val medium: ThumbnailUrl? = null
 )
 
 data class ThumbnailUrl(
-    val url: String
+    val url: String? = null
 )
