@@ -27,7 +27,7 @@
 | Gọi API | Retrofit 2.9.0 + Gson converter |
 | Ảnh thumbnail | Glide 4.16.0 |
 | MQTT | `org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5` |
-| Min / Target / Compile SDK | 33 / 35 / 35 |
+| Min / Target / Compile SDK | 30 / 35 / 35 |
 
 ## Yêu cầu cấu hình
 
@@ -63,14 +63,65 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 > Nếu gặp lỗi `cmd: Can't find service: package` khi cài, package manager của emulator bị treo — hãy `adb reboot` rồi cài lại.
 
-### Chạy trên TV Xiaomi thật
+### Kết nối với TV (ADB không dây)
 
-Kết nối cùng mạng Wi-Fi, bật ADB qua mạng trên TV, sau đó:
+Để cài app lên TV qua Wi‑Fi (không cần cáp), thực hiện trên TV trước:
+
+1. **Bật chế độ nhà phát triển**: Cài đặt → Giới thiệu → bấm liên tục vào **Số hiệu bản build** (Build number) cho đến khi hiện "Bạn đã là nhà phát triển".
+2. **Bật gỡ lỗi**: Cài đặt → Tuỳ chọn nhà phát triển → bật **Gỡ lỗi USB** (USB debugging) và **Gỡ lỗi qua mạng / Wireless debugging** (tên tùy model).
+3. **Lấy IP TV**: Cài đặt → Mạng & Internet → chi tiết Wi‑Fi → **Địa chỉ IP** (ví dụ `192.168.10.107`). Đảm bảo TV và máy tính **cùng mạng Wi‑Fi**.
+4. Trên máy tính (cùng Wi‑Fi), mở terminal:
+
+   ```bash
+   adb tcpip 5555                 # bật ADB qua mạng (cổng 5555, một số TV dùng 5556)
+   adb connect 192.168.10.107:5555
+   ```
+
+   > Nếu TV hiện hộp thoại "Cho phép gỡ lỗi qua mạng?", bấm **OK**.
+
+5. Kiểm tra kết nối:
+
+   ```bash
+   adb devices
+   # 192.168.10.107:5555   device
+   ```
+
+6. Cài app:
+
+   ```bash
+   adb install -r app/build/outputs/apk/debug/app-debug.apk
+   # hoặc: ./gradlew installDebug
+   ```
+
+7. Ngắt kết nối khi xong: `adb disconnect 192.168.10.107:5555`.
+
+> **Lưu ý**
+> - Nếu `adb connect` báo `offline`, chạy `adb disconnect` rồi `connect` lại, hoặc `adb kill-server && adb start-server`.
+> - Một số TV Xiaomi cần bật **Gỡ lỗi USB** trước khi lệnh `adb tcpip` có tác dụng.
+> - Nếu gặp lỗi `cmd: Can't find service: package` khi cài, package manager của TV/emulator bị treo → `adb reboot` rồi cài lại.
+
+### Kết nối điều khiển từ xa (MQTT)
+
+Sau khi app đã chạy trên TV, bạn có thể điều khiển nó từ **điện thoại / máy tính** qua MQTT (miễn là cả hai đều tới được cùng một broker):
+
+1. Trên TV, mở **Cài đặt** (nút bánh răng) → điền **Broker** (vd `tcp://broker.hivemq.com:1883`), **Topic** (mặc định `yffk/youtube-tv/command`), **Username/Password** nếu broker yêu cầu → bấm **Kết nối**.
+2. Ở thiết bị điều khiển, dùng bất kỳ MQTT client nào (MQTT Explorer, app **MQTT Dash**, hoặc dòng lệnh `mosquitto_pub`) để **publish** lên đúng topic đó.
+
+Ví dụ với `mosquitto_pub` (chuyển video kế tiếp):
 
 ```bash
-adb connect IP_CUA_TV:5555
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+mosquitto_pub -h broker.hivemq.com -p 1883 \
+  -t "yffk/youtube-tv/command" -m '{"action":"next"}'
 ```
+
+Hoặc chỉ gửi chuỗi thuần:
+
+```bash
+mosquitto_pub -h broker.hivemq.com -p 1883 \
+  -t "yffk/youtube-tv/command" -m "play"
+```
+
+> App TV chỉ hiểu 3 lệnh: `play` (tiếp tục), `stop` (tạm dừng), `next` (video kế tiếp). Xem chi tiết tại mục **Định dạng tin nhắn điều khiển**.
 
 ## Hướng dẫn sử dụng
 
